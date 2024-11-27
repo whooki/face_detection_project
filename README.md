@@ -9,6 +9,8 @@ bash
 Skopiuj kod
 python -m venv face_detection_env
 
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+
 Windows:
 bash
 Skopiuj kod
