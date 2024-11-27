@@ -1,57 +1,66 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from retinaface import RetinaFace
 import cv2
 import numpy as np
-from detector import detect_faces
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
-import numpy as np
-import cv2
-from mtcnn import MTCNN
 
 app = FastAPI()
 
-# Funkcja wykrywająca twarze
+# Function to detect faces using RetinaFace
 def detect_faces(image):
-    detector = MTCNN()
-    results = detector.detect_faces(image)
-    faces = [{"box": result["box"]} for result in results]
-    return faces
+    """
+    Detects faces using RetinaFace.
+
+    Args:
+        image (numpy.ndarray): Input image in BGR format.
+
+    Returns:
+        list: List of bounding boxes for detected faces in the format:
+              [{"box": [x, y, width, height]}].
+    """
+    faces = RetinaFace.detect_faces(image)
+    face_boxes = []
+
+    if isinstance(faces, dict):  # Check if any faces are detected
+        for key in faces:
+            facial_area = faces[key]["facial_area"]  # Get the bounding box
+            x1, y1, x2, y2 = facial_area
+            face_boxes.append({"box": [x1, y1, x2 - x1, y2 - y1]})  # Convert to [x, y, width, height]
+
+    return face_boxes
 
 @app.post("/upload/")
 async def upload_image(file: UploadFile = File(...)):
     try:
-        # Odczytanie zawartości przesłanego pliku
+        # Read the uploaded file
         contents = await file.read()
         np_img = np.frombuffer(contents, np.uint8)
         image = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
-        # Sprawdzenie poprawności obrazu
+        # Ensure the image is valid
         if image is None:
             return JSONResponse(
-                content={"error": "Nie udało się zdekodować obrazu. Upewnij się, że plik jest prawidłowym obrazem."},
+                content={"error": "Unable to decode the image. Please upload a valid image."},
                 status_code=400,
             )
+        
+         # Scale down the image if it's too large
+        max_dimension = 800
+        height, width = image.shape[:2]
+        if max(height, width) > max_dimension:
+            scale_factor = max_dimension / max(height, width)
+            image = cv2.resize(image, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
 
-        # Detekcja twarzy
+
+        # Detect faces
         faces = detect_faces(image)
 
-        # Obsługa przypadku, gdy nie wykryto żadnych twarzy
+        # If no faces are detected
         if not faces:
-            return JSONResponse(content={"faces": [], "message": "Nie wykryto żadnych twarzy na obrazie."})
+            return JSONResponse(content={"faces": [], "message": "No faces detected in the image."})
 
-
-        # Zwrot wyników w formacie JSON
+        # Return detected faces
         return JSONResponse(content={"faces": faces})
     except Exception as e:
-        print(f"Błąd: {e}")
-        return JSONResponse(content={"error": "Nie udało się przetworzyć obrazu."}, status_code=500)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Zezwolenie na żądania ze wszystkich źródeł (na czas testów)
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+        print(f"Error: {e}")
+        return JSONResponse(content={"error": "Failed to process the image."}, status_code=500)
