@@ -49,3 +49,30 @@ canvas {
     display: block; /* Centruj canvas */
     margin: 20px auto; /* Odstępy wokół i wyrównanie */
 }
+
+#cameraSection {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#video {
+    width: 300px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#captureButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#captureButton:hover {
+    background-color: #0056b3;
+}

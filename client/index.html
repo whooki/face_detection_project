@@ -9,11 +9,18 @@
 <body>
     <div class="container">
         <h1>System Detekcji Twarzy</h1>
+
+        <!-- File input -->
         <input type="file" id="fileInput" />
         <button onclick="uploadImage()">Prześlij</button>
-        <div class="output">
-            <canvas id="canvas"></canvas>
+
+        <!-- Camera capture -->
+        <div id="cameraSection">
+            <video id="video" autoplay></video>
+            <button id="captureButton" onclick="captureImage()">Take Picture</button>
         </div>
+
+        <canvas id="canvas"></canvas>
     </div>
     <script src="script.js"></script>
 </body>
