@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from retinaface import RetinaFace
 import cv2
 import numpy as np
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 # Function to detect faces using RetinaFace
@@ -64,3 +64,11 @@ async def upload_image(file: UploadFile = File(...)):
     except Exception as e:
         print(f"Error: {e}")
         return JSONResponse(content={"error": "Failed to process the image."}, status_code=500)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Zezwolenie na żądania ze wszystkich źródeł (na czas testów)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
