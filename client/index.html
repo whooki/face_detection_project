@@ -14,11 +14,14 @@
         <input type="file" id="fileInput" />
         <button onclick="uploadImage()">Prześlij</button>
 
-        <!-- Camera capture -->
-        <div id="cameraSection">
+        <!-- Camera controls -->
+        <div id="cameraSection" style="display: none;">
             <video id="video" autoplay></video>
-            <button id="captureButton" onclick="captureImage()">Take Picture</button>
+            <div class="camera-controls">
+                <button id="takePictureButton" onclick="captureImage()"></button>
+            </div>
         </div>
+        <button id="startCameraButton" onclick="startCamera()">Take a picture</button>
 
         <canvas id="canvas"></canvas>
     </div>

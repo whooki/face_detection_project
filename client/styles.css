@@ -63,8 +63,28 @@ canvas {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#captureButton {
+.camera-controls {
+    display: flex;
+    justify-content: center;
     margin-top: 10px;
+}
+
+#takePictureButton {
+    width: 60px;
+    height: 60px;
+    background-color: red;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#takePictureButton:hover {
+    background-color: darkred;
+}
+
+#startCameraButton {
+    margin-top: 20px;
     padding: 10px 20px;
     background-color: #007BFF;
     color: white;
@@ -73,6 +93,6 @@ canvas {
     cursor: pointer;
 }
 
-#captureButton:hover {
+#startCameraButton:hover {
     background-color: #0056b3;
 }

@@ -89,19 +89,39 @@ function displayImageWithBoxes(file, faces) {
     img.src = URL.createObjectURL(file);
 }
 
-// Initialize camera
+let videoStream = null; // To track the video stream
+
+// Start the camera and show the video feed
 function startCamera() {
     const video = document.getElementById("video");
+    const cameraSection = document.getElementById("cameraSection");
+    const startCameraButton = document.getElementById("startCameraButton");
 
-    // Get access to the user's camera
+    // Hide the start camera button and show the camera section
+    startCameraButton.style.display = "none";
+    cameraSection.style.display = "block";
+
+    // Access the user's camera
     navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
-            video.srcObject = stream; // Display the video feed in the <video> element
+            videoStream = stream;
+            video.srcObject = stream;
         })
         .catch((error) => {
             console.error("Error accessing camera:", error);
             alert("Unable to access the camera.");
+            // Show the start camera button again in case of error
+            startCameraButton.style.display = "block";
+            cameraSection.style.display = "none";
         });
+}
+
+// Stop the camera when not needed
+function stopCamera() {
+    if (videoStream) {
+        videoStream.getTracks().forEach((track) => track.stop());
+        videoStream = null;
+    }
 }
 
 // Capture an image from the video feed
@@ -122,6 +142,13 @@ function captureImage() {
         console.log("Captured image blob:", blob);
         uploadCapturedImage(blob); // Upload the image to the server
     });
+
+    // Stop the camera after taking the picture
+    stopCamera();
+
+    // Hide the camera section and show the start button again
+    document.getElementById("cameraSection").style.display = "none";
+    document.getElementById("startCameraButton").style.display = "block";
 }
 
 // Upload the captured image to the server
@@ -160,8 +187,3 @@ function drawBoundingBoxes(faces) {
         ctx.strokeRect(x, y, width, height);
     });
 }
-
-// Start the camera when the page loads
-window.onload = () => {
-    startCamera();
-};
