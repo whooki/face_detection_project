@@ -67,6 +67,9 @@ async def upload_image(file: UploadFile = File(...)):
                 int(height / scale_factor),
             ]
 
+            # Log the scaled bounding boxes
+        print(f"Detected and scaled boxes (original resolution): {faces}")
+
         # Return detected faces and scaling information
         return JSONResponse(content={"faces": faces, "original_width": original_width, "original_height": original_height})
     except Exception as e:

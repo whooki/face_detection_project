@@ -3,6 +3,8 @@ document.getElementById("fileInput").addEventListener("change", previewImage);
 async function uploadImage() {
     const fileInput = document.getElementById("fileInput");
     const file = fileInput.files[0];
+    const spinner = document.getElementById("spinner");
+    const canvas = document.getElementById("canvas");
 
     if (!file) {
         alert("Please select a file!");
@@ -13,9 +15,13 @@ async function uploadImage() {
     formData.append("file", file);
 
     try {
+        // Show spinner and fade effect
+        spinner.style.display = "block";
+        canvas.classList.add("processing");
+
         const response = await fetch("http://localhost:8000/upload/", {
             method: "POST",
-            body: formData
+            body: formData,
         });
 
         if (!response.ok) {
@@ -30,11 +36,13 @@ async function uploadImage() {
     } catch (error) {
         console.error("Error uploading image:", error);
         alert(error.message);
+    } finally {
+        // Hide spinner and remove fade effect
+        spinner.style.display = "none";
+        canvas.classList.remove("processing");
     }
-
-    // console.log("Server response:", data);
-
 }
+
 
 
 function previewImage(event) {
@@ -165,13 +173,27 @@ function captureImage() {
 // Upload the captured image to the server
 function uploadCapturedImage(blob) {
     const formData = new FormData();
+    const spinner = document.getElementById("spinner");
+    const canvas = document.getElementById("canvas");
+
     formData.append("file", blob, "captured_image.png");
+
+    // Show spinner and fade the canvas
+    spinner.style.display = "block";
+    canvas.classList.add("processing");
 
     fetch("http://localhost:8000/upload/", {
         method: "POST",
         body: formData,
     })
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    throw new Error(errorData.error || "Failed to process the image.");
+                });
+            }
+            return response.json();
+        })
         .then((data) => {
             if (data.faces.length === 0) {
                 alert(data.message || "No faces detected.");
@@ -182,8 +204,15 @@ function uploadCapturedImage(blob) {
         })
         .catch((error) => {
             console.error("Error uploading captured image:", error);
+            alert(error.message);
+        })
+        .finally(() => {
+            // Hide spinner and remove fade effect
+            spinner.style.display = "none";
+            canvas.classList.remove("processing");
         });
 }
+
 
 // Draw bounding boxes for detected faces
 function drawBoundingBoxes(faces) {
