@@ -69,19 +69,23 @@ canvas {
     margin-top: 10px;
 }
 
-#takePictureButton {
-    width: 60px;
-    height: 60px;
-    background-color: red;
+#captureButton {
+    padding: 0;
     border: none;
-    border-radius: 50%;
+    background: none;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#takePictureButton:hover {
-    background-color: darkred;
+#captureButton img {
+    width: 50px;  /* Adjust size as needed */
+    height: 50px;
+    transition: transform 0.2s; /* Add a hover effect */
 }
+
+#captureButton img:hover {
+    transform: scale(1.1); /* Slightly enlarges the image on hover */
+}
+
 
 #startCameraButton {
     margin-top: 20px;

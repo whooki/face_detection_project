@@ -18,7 +18,9 @@
         <div id="cameraSection" style="display: none;">
             <video id="video" autoplay></video>
             <div class="camera-controls">
-                <button id="takePictureButton" onclick="captureImage()"></button>
+                <button id="captureButton" onclick="captureImage()" style="border: none; background: transparent;">
+                    <img src="/images/camera.webp" alt="Capture" style="width: 50px; height: 50px; cursor: pointer;" />
+                </button>
             </div>
         </div>
         <button id="startCameraButton" onclick="startCamera()">Take a picture</button>
